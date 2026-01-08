@@ -3,7 +3,31 @@ const Application = require("../models/application");
 // create application
 const createApplication = async (req, res) => {
   try {
-    const application = await Application.create(req.body);
+    // Validate required fields
+    const { company, role } = req.body;
+    
+    if (!company || !role) {
+      return res.status(400).json({ 
+        message: "Validation failed: company and role are required fields" 
+      });
+    }
+
+    // Sanitize input - only allow expected fields
+    const allowedFields = {
+      company: req.body.company,
+      role: req.body.role,
+      location: req.body.location,
+      jobDescription: req.body.jobDescription,
+      status: req.body.status,
+      skills: req.body.skills
+    };
+
+    // Remove undefined fields
+    Object.keys(allowedFields).forEach(key => 
+      allowedFields[key] === undefined && delete allowedFields[key]
+    );
+
+    const application = await Application.create(allowedFields);
     res.status(201).json(application);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -23,11 +47,31 @@ const getApplications = async (req, res) => {
 // update application
 const updateApplication = async (req, res) => {
   try {
+    // Sanitize input - only allow expected fields
+    const allowedFields = {
+      company: req.body.company,
+      role: req.body.role,
+      location: req.body.location,
+      jobDescription: req.body.jobDescription,
+      status: req.body.status,
+      skills: req.body.skills
+    };
+
+    // Remove undefined fields
+    Object.keys(allowedFields).forEach(key => 
+      allowedFields[key] === undefined && delete allowedFields[key]
+    );
+
     const updated = await Application.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true }
+      allowedFields,
+      { new: true, runValidators: true }
     );
+    
+    if (!updated) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+    
     res.status(200).json(updated);
   } catch (error) {
     res.status(400).json({ message: error.message });
