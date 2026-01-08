@@ -1,9 +1,41 @@
 const Application = require("../models/application");
 
+// Helper function to sanitize input fields
+const sanitizeApplicationFields = (body) => {
+  const allowedFields = {
+    company: body.company,
+    role: body.role,
+    location: body.location,
+    jobDescription: body.jobDescription,
+    status: body.status,
+    skills: body.skills
+  };
+
+  // Remove undefined and null fields
+  Object.keys(allowedFields).forEach(key => 
+    allowedFields[key] == null && delete allowedFields[key]
+  );
+
+  return allowedFields;
+};
+
 // create application
 const createApplication = async (req, res) => {
   try {
-    const application = await Application.create(req.body);
+    // Validate required fields
+    const { company, role } = req.body;
+    
+    if (!company || typeof company !== 'string' || !company.trim() || 
+        !role || typeof role !== 'string' || !role.trim()) {
+      return res.status(400).json({ 
+        message: "Validation failed: company and role are required fields" 
+      });
+    }
+
+    // Sanitize input - only allow expected fields
+    const allowedFields = sanitizeApplicationFields(req.body);
+
+    const application = await Application.create(allowedFields);
     res.status(201).json(application);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -23,11 +55,19 @@ const getApplications = async (req, res) => {
 // update application
 const updateApplication = async (req, res) => {
   try {
+    // Sanitize input - only allow expected fields
+    const allowedFields = sanitizeApplicationFields(req.body);
+
     const updated = await Application.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true }
+      allowedFields,
+      { new: true, runValidators: true }
     );
+    
+    if (!updated) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+    
     res.status(200).json(updated);
   } catch (error) {
     res.status(400).json({ message: error.message });
