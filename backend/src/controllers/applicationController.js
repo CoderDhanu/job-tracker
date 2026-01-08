@@ -1,7 +1,11 @@
 const Application = require("../models/application");
 const mongoose = require("mongoose");
 
-// Helper function to validate MongoDB ObjectId
+/**
+ * Validates if a given string is a valid MongoDB ObjectId
+ * @param {string} id - The ID to validate
+ * @returns {boolean} True if the ID is a valid MongoDB ObjectId, false otherwise
+ */
 const isValidObjectId = (id) => {
   return mongoose.Types.ObjectId.isValid(id);
 };
