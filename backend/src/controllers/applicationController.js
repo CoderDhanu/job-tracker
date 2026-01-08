@@ -11,9 +11,9 @@ const sanitizeApplicationFields = (body) => {
     skills: body.skills
   };
 
-  // Remove undefined fields
+  // Remove undefined and null fields
   Object.keys(allowedFields).forEach(key => 
-    allowedFields[key] === undefined && delete allowedFields[key]
+    allowedFields[key] == null && delete allowedFields[key]
   );
 
   return allowedFields;
@@ -25,7 +25,8 @@ const createApplication = async (req, res) => {
     // Validate required fields
     const { company, role } = req.body;
     
-    if (!company?.trim() || !role?.trim()) {
+    if (!company || typeof company !== 'string' || !company.trim() || 
+        !role || typeof role !== 'string' || !role.trim()) {
       return res.status(400).json({ 
         message: "Validation failed: company and role are required fields" 
       });
