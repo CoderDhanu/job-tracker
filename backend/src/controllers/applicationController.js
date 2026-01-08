@@ -1,4 +1,10 @@
 const Application = require("../models/application");
+const mongoose = require("mongoose");
+
+// Helper function to validate MongoDB ObjectId
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
 
 // Helper function to sanitize input fields
 const sanitizeApplicationFields = (body) => {
@@ -38,7 +44,15 @@ const createApplication = async (req, res) => {
     const application = await Application.create(allowedFields);
     res.status(201).json(application);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    // Provide user-friendly error messages for validation failures
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        message: "Failed to create application: validation failed", 
+        errors: messages 
+      });
+    }
+    res.status(400).json({ message: "Failed to create application" });
   }
 };
 
@@ -55,6 +69,11 @@ const getApplications = async (req, res) => {
 // update application
 const updateApplication = async (req, res) => {
   try {
+    // Validate ID format
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid application ID format" });
+    }
+
     // Sanitize input - only allow expected fields
     const allowedFields = sanitizeApplicationFields(req.body);
 
@@ -77,7 +96,17 @@ const updateApplication = async (req, res) => {
 // delete application
 const deleteApplication = async (req, res) => {
   try {
-    await Application.findByIdAndDelete(req.params.id);
+    // Validate ID format
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid application ID format" });
+    }
+
+    const deletedApplication = await Application.findByIdAndDelete(req.params.id);
+    
+    if (!deletedApplication) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+    
     res.status(200).json({ message: "Application deleted" });
   } catch (error) {
     res.status(400).json({ message: error.message });
