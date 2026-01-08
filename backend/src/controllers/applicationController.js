@@ -1,31 +1,38 @@
 const Application = require("../models/application");
 
+// Helper function to sanitize input fields
+const sanitizeApplicationFields = (body) => {
+  const allowedFields = {
+    company: body.company,
+    role: body.role,
+    location: body.location,
+    jobDescription: body.jobDescription,
+    status: body.status,
+    skills: body.skills
+  };
+
+  // Remove undefined fields
+  Object.keys(allowedFields).forEach(key => 
+    allowedFields[key] === undefined && delete allowedFields[key]
+  );
+
+  return allowedFields;
+};
+
 // create application
 const createApplication = async (req, res) => {
   try {
     // Validate required fields
     const { company, role } = req.body;
     
-    if (!company || !role) {
+    if (!company?.trim() || !role?.trim()) {
       return res.status(400).json({ 
         message: "Validation failed: company and role are required fields" 
       });
     }
 
     // Sanitize input - only allow expected fields
-    const allowedFields = {
-      company: req.body.company,
-      role: req.body.role,
-      location: req.body.location,
-      jobDescription: req.body.jobDescription,
-      status: req.body.status,
-      skills: req.body.skills
-    };
-
-    // Remove undefined fields
-    Object.keys(allowedFields).forEach(key => 
-      allowedFields[key] === undefined && delete allowedFields[key]
-    );
+    const allowedFields = sanitizeApplicationFields(req.body);
 
     const application = await Application.create(allowedFields);
     res.status(201).json(application);
@@ -48,19 +55,7 @@ const getApplications = async (req, res) => {
 const updateApplication = async (req, res) => {
   try {
     // Sanitize input - only allow expected fields
-    const allowedFields = {
-      company: req.body.company,
-      role: req.body.role,
-      location: req.body.location,
-      jobDescription: req.body.jobDescription,
-      status: req.body.status,
-      skills: req.body.skills
-    };
-
-    // Remove undefined fields
-    Object.keys(allowedFields).forEach(key => 
-      allowedFields[key] === undefined && delete allowedFields[key]
-    );
+    const allowedFields = sanitizeApplicationFields(req.body);
 
     const updated = await Application.findByIdAndUpdate(
       req.params.id,
