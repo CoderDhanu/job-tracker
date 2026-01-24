@@ -18,8 +18,15 @@ const applicationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["applied", "interviewing", "rejected", "offer"],
-      default: "applied",
+      enum: [
+        "Applied",
+        "Interviewing",
+        "Offered",
+        "Rejected",
+        "Accepted",
+        "Withdrawn",
+      ],
+      default: "Applied",
     },
     skills: {
       type: [String],
