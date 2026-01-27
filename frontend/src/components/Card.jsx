@@ -36,7 +36,7 @@ export default function Card({ app, onEdit, onDelete }) {
 
           {/* Job Description */}
           {app.jobDescription && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+            <p className="text-sm text-gray-600 mb-3">
               {app.jobDescription}
             </p>
           )}
