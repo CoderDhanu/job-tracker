@@ -1,5 +1,5 @@
-const Application = require("../models/application");
-const mongoose = require("mongoose");
+import Application from "../models/application.js";
+import mongoose from "mongoose";
 
 /**
  * Validates if a given string is a valid MongoDB ObjectId
@@ -33,7 +33,7 @@ const sanitizeApplicationFields = (body) => {
 
   // Remove undefined and null fields
   Object.keys(allowedFields).forEach(
-    (key) => allowedFields[key] == null && delete allowedFields[key]
+    (key) => allowedFields[key] == null && delete allowedFields[key],
   );
 
   return allowedFields;
@@ -126,7 +126,7 @@ const updateApplication = async (req, res) => {
     const updated = await Application.findByIdAndUpdate(
       req.params.id,
       allowedFields,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!updated) {
@@ -156,7 +156,7 @@ const deleteApplication = async (req, res) => {
     }
 
     const deletedApplication = await Application.findByIdAndDelete(
-      req.params.id
+      req.params.id,
     );
 
     if (!deletedApplication) {
@@ -169,7 +169,7 @@ const deleteApplication = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   createApplication,
   getApplications,
   updateApplication,

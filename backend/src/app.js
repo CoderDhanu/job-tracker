@@ -1,7 +1,8 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
 
-const applicationRoutes = require("./routes/applicationRoutes");
+import applicationRoutes from "./routes/applicationRoutes.js";
+import recommendationRoutes from "./routes/recommendationRoutes.js";
 
 const app = express();
 
@@ -56,9 +57,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/applications", applicationRoutes);
+app.use("/api/recommendations", recommendationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Job Tracker API is running");
 });
 
-module.exports = app;
+export default app;

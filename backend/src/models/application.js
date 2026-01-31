@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const applicationSchema = new mongoose.Schema(
   {
@@ -32,7 +32,7 @@ const applicationSchema = new mongoose.Schema(
       type: [String],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = mongoose.model("Application", applicationSchema);
+export default mongoose.model("Application", applicationSchema);
