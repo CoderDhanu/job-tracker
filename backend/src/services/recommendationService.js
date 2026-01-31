@@ -38,7 +38,32 @@ const getTopSkills = (skillCount, limit = 5) => {
     .map(([skill]) => skill);
 };
 
+const recommendRoles = (applications) => {
+  const roleCount = {};
+
+  applications.forEach((application) => {
+    const role = application.role;
+    roleCount[role] = (roleCount[role] || 0) + 1;
+  });
+
+  return Object.entries(roleCount)
+    .sort((a, b) => b[1] - a[1])
+    .map(([role]) => role)
+    .slice(0, 3);
+};
+
+const calculateConfidence = (applications) => {
+  if (applications.length === 0) return 0;
+
+  const skillCount = extractSkillFrequency(applications);
+  const uniqueSkills = Object.keys(skillCount).length;
+
+  return Math.min(1, uniqueSkills / 10).toFixed(2);
+};
+
 export default {
   extractSkillFrequency,
   getTopSkills,
+  recommendRoles,
+  calculateConfidence,
 };
