@@ -38,6 +38,12 @@ const getTopSkills = (skillCount, limit = 5) => {
     .map(([skill]) => skill);
 };
 
+/**
+ * Recommends the top 3 most frequently applied roles from a list of applications.
+ *
+ * @param {Array<{role: string}>} applications - Array of application objects, each containing a 'role' property.
+ * @returns {string[]} An array of up to 3 role names, sorted by frequency in descending order.
+ */
 const recommendRoles = (applications) => {
   const roleCount = {};
 
@@ -52,6 +58,12 @@ const recommendRoles = (applications) => {
     .slice(0, 3);
 };
 
+/**
+ * Calculates a confidence score based on the diversity of skills found in the given applications.
+ *
+ * @param {Array<Object>} applications - An array of application objects to analyze.
+ * @returns {string} A confidence score between "0.00" and "1.00", representing the proportion of unique skills (up to 10).
+ */
 const calculateConfidence = (applications) => {
   if (applications.length === 0) return 0;
 
