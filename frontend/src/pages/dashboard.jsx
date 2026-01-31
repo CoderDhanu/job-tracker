@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
-import { fetchApplications, deleteApplication, createApplication as createApplicationAPI, updateApplication } from "../api/applications";
+import { useNavigate } from "react-router-dom";
+import {
+  fetchApplications,
+  deleteApplication,
+  createApplication as createApplicationAPI,
+  updateApplication,
+} from "../api/applications";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import Modal from "../components/Modal";
 import CreateApplicationForm from "../components/CreateApplicationForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboardList } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faClipboardList,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -91,7 +101,9 @@ export default function Dashboard() {
       setIsSubmitting(true);
       const response = await updateApplication(editingApp._id, formData);
       setApplications(
-        applications.map((app) => (app._id === editingApp._id ? response.data : app))
+        applications.map((app) =>
+          app._id === editingApp._id ? response.data : app,
+        ),
       );
       setIsEditModalOpen(false);
       setEditingApp(null);
@@ -108,14 +120,31 @@ export default function Dashboard() {
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex">
+        <div className="flex items-start">
           <div className="mb-8 justify-items-start">
-            <h1 className="text-3xl font-bold text-gray-900">My Applications</h1>
-            <p className="text-gray-600 mt-2">Track and manage your job applications</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              My Applications
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Track and manage your job applications
+            </p>
           </div>
-          <div className="ml-auto">
-            <Button variant="primary" size="md" onClick={handleCreateApplication}>
+          <div className="ml-auto flex items-center gap-3">
+            <Button
+              variant="primary"
+              size="md"
+              onClick={handleCreateApplication}
+            >
               Create Application
+            </Button>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => navigate("/insights")}
+              aria-label="Go to insights"
+            >
+              Insights
+              <FontAwesomeIcon icon={faArrowRight} aria-hidden="true" />
             </Button>
           </div>
         </div>
@@ -149,13 +178,12 @@ export default function Dashboard() {
         {!loading && !error && applications.length === 0 && (
           <div className="text-center py-12">
             <div className="flex justify-center gap-3 text-gray-900">
-              <FontAwesomeIcon
-                icon={faClipboardList}
-                className="self-center"
-              />
+              <FontAwesomeIcon icon={faClipboardList} className="self-center" />
               <h3 className="text-lg font-medium">No applications yet</h3>
             </div>
-            <p className="text-gray-600">Start tracking your job applications to get started!</p>
+            <p className="text-gray-600">
+              Start tracking your job applications to get started!
+            </p>
           </div>
         )}
 
